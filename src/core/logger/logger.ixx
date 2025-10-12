@@ -1,15 +1,19 @@
-export module core.logging;
+module;
+
+#include <string_view>
+
+export module core.logger;
+
+export enum class LogLevel {
+    Debug,
+    Info,
+    Warning,
+    Error
+};
 
 export class ILogger
 {
-    enum LogLevel
-    {
-        Debug,
-        Info,
-        Warning,
-        Error
-    };
-
+public:
     virtual ~ILogger() = default;
-    virtual void log(LogLevel level, const char *message) = 0;
+    virtual void log(LogLevel level, const std::string_view message) = 0;
 };
