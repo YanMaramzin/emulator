@@ -20,7 +20,7 @@ public:
                 prefix = "[INFO]  ";
                 break;
             case LogLevel::Warning:
-                prefix = "[WARN]  ";
+                prefix = "[WARNING]  ";
                 break;
             case LogLevel::Error:
                 prefix = "[ERROR] ";
