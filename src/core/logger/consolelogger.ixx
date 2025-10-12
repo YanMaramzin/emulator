@@ -28,8 +28,18 @@ public:
             // case LogLevel::Fatal: prefix = "[FATAL] "; break;
         }
 
-        std::cout << prefix << message << std::endl;
+        std::cout << colorFor(level) << prefix << message << "\033[0m\n";
     };
 
-    ~ConsoleLogger() override;
+    ~ConsoleLogger() override = default;
+private:
+    static const char* colorFor(const LogLevel level) {
+        switch (level) {
+            case LogLevel::Info: return "\033[32m";    // зелёный
+            case LogLevel::Warning: return "\033[33m"; // жёлтый
+            case LogLevel::Error: return "\033[31m";   // красный
+            case LogLevel::Debug: return "\033[36m";   // циан
+            default: return "\033[0m";
+        }
+    }
 };
