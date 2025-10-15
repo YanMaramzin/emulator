@@ -8,3 +8,5 @@ target_sources(core.plugin
         pluginmanager.ixx
         pluginloader.ixx
 )
+
+target_link_libraries(core.plugin PRIVATE core.logger)
