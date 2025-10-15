@@ -8,7 +8,7 @@ import core.logger;
 
 export class ConsoleLogger final : public ILogger {
 public:
-    void log(const LogLevel level, const std::string_view message) override {
+    void log(const LogLevel level, const std::string_view message) const override {
         std::string prefix;
 
         switch (level) {
