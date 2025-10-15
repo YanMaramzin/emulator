@@ -15,5 +15,5 @@ export class ILogger
 {
 public:
     virtual ~ILogger() = default;
-    virtual void log(LogLevel level, const std::string_view message) = 0;
+    virtual void log(LogLevel level, const std::string_view message) const = 0;
 };
