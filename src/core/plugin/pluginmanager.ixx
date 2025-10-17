@@ -1,4 +1,5 @@
 module;
+#include <utility>
 #include <vector>
 #include <filesystem>
 #include <memory>
@@ -10,14 +11,19 @@ import core.pluginloader;
 import core.logger.console;
 import core.logger;
 
+struct ManagedPlugin {
+    std::unique_ptr<IPlugin> instance;
+    std::filesystem::path pluginPath;
+};
+
 export class PluginManager
 {
 public:
-    explicit PluginManager(const std::filesystem::path &pluginDir);
-    void registerPlugin(std::unique_ptr<IPlugin> plugin);
+    explicit PluginManager(std::filesystem::path pluginDir);
+    void registerPlugin(ManagedPlugin plugin);
+    void loadAll();
     void initializeAll() const;
     void shutdownAll() const;
-
 
     // Managing Plugins
     void startPlugin(const std::string &name);
@@ -25,103 +31,101 @@ public:
     void stopPlugin(const std::string &name);
 
 private:
-    std::vector<std::filesystem::path> scanPlugins() const;
+    [[nodiscard]] std::vector<std::filesystem::path> scanPlugins() const;
     std::filesystem::path m_pluginDir;
     PluginLoader loader;
     std::unique_ptr<ConsoleLogger> m_logger;
-    std::vector<std::unique_ptr<IPlugin>> m_plugins;
+    std::vector<ManagedPlugin> m_plugins;
 };
 
-PluginManager::PluginManager(const std::filesystem::path &pluginDir) :
-    m_pluginDir(pluginDir),
+PluginManager::PluginManager(std::filesystem::path pluginDir) :
+    m_pluginDir(std::move(pluginDir)),
     m_logger(std::make_unique<ConsoleLogger>())
 {
     m_logger->log(LogLevel::Info, "PluginManager initialized");
-    for (const auto pluginsPath = scanPlugins(); const auto &pluginPath: pluginsPath) {
-        auto plugin = loader.load(pluginPath);
-        if (!plugin) {
-            m_logger->log(LogLevel::Error, "Failed to load plugin " + pluginPath.string());
-            continue;
-        }
-        registerPlugin(std::move(plugin));
-    }
-
+    loadAll();
     initializeAll();
 }
 
-void PluginManager::registerPlugin(std::unique_ptr<IPlugin> plugin)
+void PluginManager::registerPlugin(ManagedPlugin plugin)
 {
-    m_logger->log(LogLevel::Info, "Registering plugin " + plugin->name());
+    m_logger->log(LogLevel::Info, plugin.instance->metadata().name);
     m_plugins.push_back(std::move(plugin));
+}
+
+void PluginManager::loadAll()
+{
+    for (const auto &path : scanPlugins()) {
+        auto pluginInstance = loader.load(path.string());
+        if (!pluginInstance) {
+            m_logger->log(LogLevel::Error, "Failed to load plugin: " + path.string());
+            continue;
+        }
+
+        const auto meta = pluginInstance->metadata();
+        m_logger->log(LogLevel::Info, meta.name);
+
+        m_plugins.push_back(ManagedPlugin{ std::move(pluginInstance), path });
+    }
 }
 
 void PluginManager::initializeAll() const
 {
-    for (const auto &plugin : m_plugins)
-        plugin->initialize();
+    for (const auto &[instance, _] : m_plugins)
+        instance->initialize();
 }
 
 void PluginManager::shutdownAll() const {
-    for (const auto &plugin : m_plugins)
-        plugin->shutdown();
+    for (const auto &[instance, _] : m_plugins)
+        instance->shutdown();
 }
 
 void PluginManager::startPlugin(const std::string &name)
 {
     m_logger->log(LogLevel::Info, "Starting plugin " + name);
-    for (auto &plugin: m_plugins) {
-        if (plugin->name() == name) {
-            try {
-                plugin->initialize();
-                m_logger->log(LogLevel::Info, "Plugin {} initialized manually" + name);
-            } catch (const std::exception &e) {
-                m_logger->log(LogLevel::Error, "Failed to initialize plugin" + name + e.what());
-            }
-            return;
-        }
+    for (const auto &[instance, pluginPath] : m_plugins) {
+        if (instance->metadata().name != name)
+            continue;
+
+        instance->initialize();
+        m_logger->log(LogLevel::Info, "Plugin {} initialized manually" + name);
+        return;
     }
+
     m_logger->log(LogLevel::Warning, "Plugin {} not found" + name);
 }
 
 void PluginManager::reloadPlugin(const std::string &name)
 {
-    // Logger::instance().log(LogLevel::Info, "Reloading plugin: " + name);
-
     stopPlugin(name);
+    for (auto &[instance, pluginPath] : m_plugins) {
+        if (instance->metadata().name != name)
+            continue;
 
-    // Находим плагин и перезагружаем через loader
-    // auto pluginPtr = findPlugin(name);
-    // if (!pluginPtr) {
-        // Logger::instance().log(LogLevel::Error, "Cannot reload: plugin not found: " + name);
-        // return;
-    // }
+        if (auto newPlugin = loader.load(pluginPath)) {
+            instance = std::move(newPlugin);
+            startPlugin(name);
+            m_logger->log(LogLevel::Info, "Plugin successfully reloaded: " + name);
+        } else {
+            m_logger->log(LogLevel::Error, "Failed to reload plugin: " + name);
+        }
+    }
 
-    // std::filesystem::path pluginPath = loader.libraryPathOf(name);
-    // auto newPlugin = loader.load(pluginPath);
-
-    // if (newPlugin) {
-        // *pluginPtr = std::move(newPlugin);
-        // startPlugin(name);
-        // Logger::instance().log(LogLevel::Info, "Plugin successfully reloaded: " + name);
-    // } else {
-        // Logger::instance().log(LogLevel::Error, "Failed to reload plugin: " + name);
-    // }
+    m_logger->log(LogLevel::Warning, "Plugin not found for reload: " + name);
 }
 
 void PluginManager::stopPlugin(const std::string &name)
 {
     m_logger->log(LogLevel::Info, "Stopping plugin " + name);
-    for (auto &plugin : m_plugins) {
-        if (plugin->name() == name) {
-            try {
-                plugin->shutdown();
-                m_logger->log(LogLevel::Info, "Plugin {} shutdown manually" + name);
-            } catch (const std::exception& e) {
-                m_logger->log(LogLevel::Error, "Failed to shutdown plugin" + name + e.what());
-            }
-            return;
-        }
+    for (auto &[instance, pluginPath] : m_plugins) {
+        if (instance->metadata().name != name)
+            continue;
+
+        instance->shutdown();
+        m_logger->log(LogLevel::Info, "Plugin {} shutdown manually" + name);
+        return;
     }
+
     m_logger->log(LogLevel::Warning, "Plugin {} not found" + name);
 }
 
@@ -153,4 +157,4 @@ std::vector<std::filesystem::path> PluginManager::scanPlugins() const
     return pluginsFiles;
 }
 
-export PluginManager pluginManager {std::filesystem::path("../../plugins")};
+export PluginManager pluginManager {std::filesystem::path("../../bin/plugins")};

@@ -16,8 +16,12 @@ public:
         printf("TestPlugin shutdown!\n");
     }
 
-    std::string name() const override {
-        return "TestPlugin";
+    [[nodiscard]] const PluginMetadata metadata() const override {
+        static constexpr PluginMetadata metadata {
+            .id = "testplugin",
+            .name = "Test Plugin"
+        };
+        return metadata;
     }
 };
 
