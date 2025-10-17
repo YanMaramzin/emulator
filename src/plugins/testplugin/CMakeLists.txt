@@ -6,7 +6,3 @@ target_sources(testPlugin
         testplugin.ixx
 )
 target_link_libraries(testPlugin PRIVATE core.plugin)
-
-set_target_properties(testPlugin PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins
-)
