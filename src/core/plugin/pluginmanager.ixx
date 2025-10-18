@@ -10,6 +10,8 @@ import core.iplugin;
 import core.pluginloader;
 import core.logger.console;
 import core.logger;
+import core.ieventsystem;
+import core.eventsystem;
 
 struct ManagedPlugin {
     std::unique_ptr<IPlugin> instance;
@@ -36,15 +38,19 @@ private:
     PluginLoader loader;
     std::unique_ptr<ConsoleLogger> m_logger;
     std::vector<ManagedPlugin> m_plugins;
+    std::shared_ptr<IEventSystem> m_eventSystem;
 };
 
 PluginManager::PluginManager(std::filesystem::path pluginDir) :
     m_pluginDir(std::move(pluginDir)),
-    m_logger(std::make_unique<ConsoleLogger>())
+    m_logger(std::make_unique<ConsoleLogger>()),
+    m_eventSystem(std::make_shared<EventSystem>())
 {
     m_logger->log(LogLevel::Info, "PluginManager initialized");
     loadAll();
     initializeAll();
+    // публикуем событие
+    m_eventSystem->publishPluginLoaded({ "BUS BUS"});
 }
 
 void PluginManager::registerPlugin(ManagedPlugin plugin)
@@ -61,11 +67,11 @@ void PluginManager::loadAll()
             m_logger->log(LogLevel::Error, "Failed to load plugin: " + path.string());
             continue;
         }
-
+        pluginInstance->setEventSystem(m_eventSystem);
         const auto meta = pluginInstance->metadata();
         m_logger->log(LogLevel::Info, meta.name);
 
-        m_plugins.push_back(ManagedPlugin{ std::move(pluginInstance), path });
+        m_plugins.push_back({ std::move(pluginInstance), path });
     }
 }
 

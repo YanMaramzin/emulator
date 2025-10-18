@@ -10,6 +10,11 @@ export class TestPlugin : public IPlugin {
 public:
     void initialize() override {
         printf("TestPlugin initialized!\n");
+        if (const auto es = eventSystem()) {
+            es->subscribePluginLoaded([](const auto &e) {
+                printf("[TestPlugin] Plugin loaded: %s\n", e.name);
+            });
+        }
     }
 
     void shutdown() override {
