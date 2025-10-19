@@ -7,3 +7,7 @@ export struct PluginLoadedEvent {
 export struct PluginUnloadedEvent {
     const char *name;
 };
+
+export struct MyEvent {
+    int value;
+};

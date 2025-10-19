@@ -5,14 +5,15 @@ module;
 
 export module core.iplugin;
 import core.ieventsystem;
+import core.object;
 
 export struct PluginMetadata {
     std::string_view id;
     std::string_view name;
-    // std::string version;
-    // std::string author;
-    // std::string description;
-    // std::string apiVersion;
+    std::string version;
+    std::string author;
+    std::string description;
+    std::string apiVersion;
     //std::vector<std::string> dependencies;
 };
 
@@ -23,10 +24,10 @@ export enum PluginState {
     Stopped
 };
 
-export class IPlugin
+export class IPlugin : public Object
 {
 public:
-    virtual ~IPlugin() = default;
+    ~IPlugin() override = default;
 
     virtual void initialize() = 0;
     virtual void shutdown() = 0;

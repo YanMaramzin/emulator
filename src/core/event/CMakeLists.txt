@@ -7,3 +7,7 @@ target_sources(core.event
         eventsystem.ixx
         ieventsystem.ixx
 )
+
+target_link_libraries(core.event PRIVATE core.object)
+
+set_target_properties(core.event PROPERTIES POSITION_INDEPENDENT_CODE ON)
