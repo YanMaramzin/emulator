@@ -5,4 +5,5 @@ target_sources(testPlugin
         FILE_SET CXX_MODULES FILES
         testplugin.ixx
 )
-target_link_libraries(testPlugin PRIVATE core.plugin)
+
+target_link_libraries(testPlugin PRIVATE core.plugin core.event)

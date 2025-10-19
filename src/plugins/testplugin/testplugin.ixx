@@ -1,37 +1,50 @@
 module;
-#include <cstdio>
-#include <string>
+#include <iostream>
+#include <memory>
 
 export module testplugin;
 
 import core.iplugin;
+import core.events;
 
-export class TestPlugin : public IPlugin {
+class TestPlugin final : public IPlugin {
 public:
+    ~TestPlugin() override = default;
     void initialize() override {
-        printf("TestPlugin initialized!\n");
-        if (const auto es = eventSystem()) {
-            es->subscribePluginLoaded([](const auto &e) {
-                printf("[TestPlugin] Plugin loaded: %s\n", e.name);
-            });
+        std::cout << "TestPlugin initialized\n";
+
+        // Подписка на MyEvent через EventSystem
+        if (const auto bus = eventSystem()) {
+            bus->subscribe<MyEvent>(self(),
+                [this](const MyEvent &e) {
+                    std::cout << "Received MyEvent: " << e.value << "\n";
+                });
         }
     }
 
     void shutdown() override {
-        printf("TestPlugin shutdown!\n");
+        std::cout << "TestPlugin shutdown\n";
+        if (const auto bus = eventSystem()) {
+            // Отписка всех колбеков текущего объекта
+            bus->unsubscribeAll(self());
+        }
     }
 
-    [[nodiscard]] const PluginMetadata metadata() const override {
-        static constexpr PluginMetadata metadata {
-            .id = "testplugin",
-            .name = "Test Plugin"
+    const PluginMetadata metadata() const override {
+        static PluginMetadata meta{
+            "testplugin",
+            "Test Plugin",
+            "1.0",
+            "Author",
+            "A test plugin",
+            "1.0"
         };
-        return metadata;
+        return meta;
     }
 };
 
 // Фабричная функция — именно её вызовет PluginLoader
-extern "C" IPlugin* createPlugin() {
+extern "C" IPlugin *createPlugin() {
     return new TestPlugin();
 }
 
