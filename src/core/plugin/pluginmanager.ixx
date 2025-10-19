@@ -12,9 +12,10 @@ import core.logger.console;
 import core.logger;
 import core.ieventsystem;
 import core.eventsystem;
+import core.events;
 
 struct ManagedPlugin {
-    std::unique_ptr<IPlugin> instance;
+    std::shared_ptr<IPlugin> instance;
     std::filesystem::path pluginPath;
 };
 
@@ -49,8 +50,10 @@ PluginManager::PluginManager(std::filesystem::path pluginDir) :
     m_logger->log(LogLevel::Info, "PluginManager initialized");
     loadAll();
     initializeAll();
+    auto testEvent = MyEvent{42};
+    m_eventSystem->publish(testEvent);
     // публикуем событие
-    m_eventSystem->publishPluginLoaded({ "BUS BUS"});
+    //// m_eventSystem->publishPluginLoaded({ "BUS BUS"});
 }
 
 void PluginManager::registerPlugin(ManagedPlugin plugin)
@@ -159,6 +162,9 @@ std::vector<std::filesystem::path> PluginManager::scanPlugins() const
         m_logger->log(LogLevel::Info, "Found plugin file " + path.string());
         pluginsFiles.push_back(path);
     }
+
+    if (pluginsFiles.empty())
+        m_logger->log(LogLevel::Info, "Plugins not found");
 
     return pluginsFiles;
 }
