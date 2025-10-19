@@ -41,6 +41,8 @@ std::unique_ptr<IPlugin> PluginLoader::load(const std::string &path)
             FreeLibrary(handle);
     #else
         void *handle = dlopen(path.c_str(), RTLD_NOW);
+        if (!handle)
+            return nullptr;
         auto createFunc = reinterpret_cast<IPlugin*(*)()>(dlsym(handle, "createPlugin"));
         if (!createFunc)
             dlclose(handle);
