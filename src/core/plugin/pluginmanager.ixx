@@ -33,6 +33,19 @@ public:
     void reloadPlugin(const std::string &name);
     void stopPlugin(const std::string &name);
 
+    template<typename T>
+    std::shared_ptr<T> get(const std::string &id) const {
+        for (auto &plugin : m_plugins) {
+            if (plugin.instance->metadata().id == id) {
+                // Пытаемся привести к нужному интерфейсу
+                auto casted = std::dynamic_pointer_cast<T>(plugin.instance);
+                return casted;
+            }
+        }
+        // Если плагин не найден
+        return nullptr;
+    };
+
 private:
     [[nodiscard]] std::vector<std::filesystem::path> scanPlugins() const;
     std::filesystem::path m_pluginDir;
