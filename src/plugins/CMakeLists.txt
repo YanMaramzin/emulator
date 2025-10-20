@@ -8,4 +8,5 @@ set(PLUGIN_DIR "${BIN_DIR}/plugins")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PLUGIN_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PLUGIN_DIR}) # для .lib/.a если нужно
 
+add_subdirectory(mainwindow)
 add_subdirectory(testplugin)
