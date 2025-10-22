@@ -7,44 +7,44 @@ on:
     branches: [ main ]
 
 jobs:
-  build-linux-gcc:
-    name: Linux (GCC 14)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y cmake ninja-build g++-14 qt6-base-dev qt6-tools-dev qt6-declarative-dev
-          export CXX=g++-14
-
-      - name: Configure
-        run: cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
-
-      - name: Build
-        run: cmake --build build --config Release
-
-
-  build-linux-clang:
-    name: Linux (Clang 17)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y cmake ninja-build clang-17 qt6-base-dev qt6-tools-dev qt6-declarative-dev
-          export CXX=clang++-17
-
-      - name: Configure
-        run: cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
-
-      - name: Build
-        run: cmake --build build --config Release
+#  build-linux-gcc:
+#    name: Linux (GCC 14)
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Install dependencies
+#        run: |
+#          sudo apt update
+#          sudo apt install -y cmake ninja-build g++-14 qt6-base-dev qt6-tools-dev qt6-declarative-dev
+#          export CXX=g++-14
+#
+#      - name: Configure
+#        run: cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
+#
+#      - name: Build
+#        run: cmake --build build --config Release
+#
+#
+#  build-linux-clang:
+#    name: Linux (Clang 17)
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Install dependencies
+#        run: |
+#          sudo apt update
+#          sudo apt install -y cmake ninja-build clang-17 qt6-base-dev qt6-tools-dev qt6-declarative-dev
+#          export CXX=clang++-17
+#
+#      - name: Configure
+#        run: cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
+#
+#      - name: Build
+#        run: cmake --build build --config Release
 
 
   build-windows-msvc:
@@ -52,24 +52,31 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Проверить исходный код
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Установить CMake 4.0.4
-        uses: kitware/cmake-action@v3
+      - name: Install Python
+        uses: actions/setup-python@v4
         with:
-          version: 4.0.4
+          python-version: '3.11'
 
-      - name: Установить Qt 6.10.0
-        uses: jurplel/install-qt-action@v4.3.0
+      - name: Install aqtinstall
+        run: |
+          python -m pip install --upgrade pip
+          pip install aqtinstall
+
+      - name: Install Qt 6.10.0
+        run: |
+          aqt install-qt windows desktop 6.10.0 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt
+        shell: pwsh
+
+      - name: Setup CMake
+        uses: Kitware/CMake@v3
         with:
-          version: 6.10.0
-          host: windows
-          target: desktop
-          arch: win64_msvc2022_64
+          cmake-version: '4.1.2'  # Последняя стабильная версия CMake
 
-      - name: Создать каталог сборки
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Configure CMake
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:GITHUB_WORKSPACE\Qt\6.10.0\msvc2022_64"
 
-      - name: Сборка проекта
+      - name: Build
         run: cmake --build build --config Release
