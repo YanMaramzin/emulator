@@ -71,9 +71,9 @@ jobs:
         shell: pwsh
 
       - name: Setup CMake
-        uses: Kitware/CMake@v4.1.2
-#        with:
-#          cmake-version: '4.1.2'  # Последняя стабильная версия CMake
+        uses: Kitware/CMake@v3
+        with:
+          cmake-version: '4.1.2'  # Последняя стабильная версия CMake
 
       - name: Configure CMake
         run: cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:GITHUB_WORKSPACE\Qt\6.10.0\msvc2022_64"
