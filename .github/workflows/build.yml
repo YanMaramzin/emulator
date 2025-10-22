@@ -52,39 +52,24 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Проверить исходный код
+        uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Установить CMake 4.0.4
+        uses: kitware/cmake-action@v3
         with:
-          python-version: '3.x'
+          version: 4.0.4
 
-      - name: Install aqtinstall
-        run: pip install aqtinstall
-        shell: powershell
+      - name: Установить Qt 6.10.0
+        uses: jurplel/install-qt-action@v4.3.0
+        with:
+          version: 6.10.0
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
 
-      - name: List available Qt packages
-        run: aqt list-qt windows desktop
-        shell: powershell
+      - name: Создать каталог сборки
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
-      - name: Install Qt 6.6.3
-        run: |
-          aqt install-qt windows desktop 6.6.3 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt
-        shell: powershell
-
-      - name: Setup MSVC environment
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Configure CMake
-        run: |
-          cmake -S . -B build -G "Ninja" `
-            -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_PREFIX_PATH="$env:GITHUB_WORKSPACE\Qt\6.6.3\msvc2022_64\lib\cmake" `
-            -DCMAKE_CXX_STANDARD=20 `
-            -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
-        shell: powershell
-
-      - name: Build project
+      - name: Сборка проекта
         run: cmake --build build --config Release
-        shell: powershell
