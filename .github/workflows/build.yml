@@ -48,29 +48,43 @@ jobs:
 
 
   build-windows-msvc:
-    name: Windows (MSVC)
+    name: Windows (MSVC + Qt6 + C++20 Modules)
     runs-on: windows-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Python (for aqt)
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
       - name: Install aqtinstall
         run: pip install aqtinstall
+        shell: powershell
 
-      - name: Install Qt
+      - name: List available Qt packages
+        run: aqt list-qt windows desktop 6.6.3
+        shell: powershell
+
+      - name: Install Qt 6.6.3
         run: |
-          aqt install-qt windows desktop 6.6.3 win64_msvc2022_64 -O %GITHUB_WORKSPACE%\Qt
+          aqt install-qt windows desktop 6.6.3 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt
+        shell: powershell
 
-      - name: Setup MSVC
+      - name: Setup MSVC environment
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Configure
-        run: cmake -S . -B build -G "Ninja" -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${{ github.workspace }}Qt\6.6.3\msvc2022_64\lib\cmake"
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build -G "Ninja" `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_PREFIX_PATH="$env:GITHUB_WORKSPACE\Qt\6.6.3\msvc2022_64\lib\cmake" `
+            -DCMAKE_CXX_STANDARD=20 `
+            -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
+        shell: powershell
 
       - name: Build
         run: cmake --build build --config Release
+        shell: powershell
