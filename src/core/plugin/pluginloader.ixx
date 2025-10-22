@@ -31,13 +31,12 @@ private:
 std::unique_ptr<IPlugin> PluginLoader::load(const std::string &path)
 {
     #if defined(_WIN32)
-        auto handle = LoadLibraryA(path.c_str())
+        auto handle = LoadLibraryA(path.c_str());
         if (!handle)
-            m_consoleLogger.log(LogLevel::Info, std::string("Failed to load plugin:"));
-        auto createFunc = reinterpret_cast<IPlugin*(*)()>(
-           GetProcAddress(handle, "createPlugin")
-        );
-        if (!create_func)
+            return nullptr;
+            // m_consoleLogger.log(LogLevel::Info, std::string("Failed to load plugin:"));
+        auto createFunc = reinterpret_cast<IPlugin*(*)()>(GetProcAddress(handle, "createPlugin"));
+        if (!createFunc)
             FreeLibrary(handle);
     #else
         void *handle = dlopen(path.c_str(), RTLD_NOW);
@@ -56,7 +55,7 @@ void PluginLoader::unloadAll()
 {
     for (auto handle : m_handles) {
         #if defined(_WIN32)
-            FreeLibrary(handle)
+            FreeLibrary(handle);
         #else
             dlclose(handle);
         #endif
