@@ -1,13 +1,8 @@
 
-if(POLICY CMP0156)
-    cmake_policy(SET CMP0156 OLD)  # disables automatic module scanning
-endif()
-set(CMAKE_CXX_SCAN_FOR_MODULES OFF CACHE BOOL "" FORCE)
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Gui Quick Qml)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml)
 
 add_library(mainwindow SHARED)
 target_sources(mainwindow
@@ -22,7 +17,10 @@ qt_add_qml_module(mainwindow
     QML_FILES qml/MainWindow.qml
 )
 
-target_link_libraries(mainwindow PRIVATE Qt6::Gui
+target_link_libraries(mainwindow
+PRIVATE
+        Qt6::Core
+        Qt6::Gui
         Qt6::Quick
         Qt6::Qml
         core.plugin)
