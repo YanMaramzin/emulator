@@ -124,7 +124,7 @@ void PluginManager::reloadPlugin(const std::string &name)
         if (instance->metadata().name != name)
             continue;
 
-        if (auto newPlugin = loader.load(pluginPath)) {
+        if (auto newPlugin = loader.load(pluginPath.string())) {
             instance = std::move(newPlugin);
             startPlugin(name);
             m_logger->log(LogLevel::Info, "Plugin successfully reloaded: " + name);
