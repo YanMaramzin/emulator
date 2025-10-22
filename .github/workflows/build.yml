@@ -70,7 +70,7 @@ jobs:
 
       - name: Install Qt 6.6.3
         run: |
-          aqt install-qt windows desktop 6.6.3 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt
+          aqt install-qt windows desktop --arch 6.6.3 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt
         shell: powershell
 
       - name: Setup MSVC environment
