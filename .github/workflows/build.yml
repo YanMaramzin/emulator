@@ -52,7 +52,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Python
@@ -65,7 +65,7 @@ jobs:
         shell: powershell
 
       - name: List available Qt packages
-        run: aqt list-qt windows desktop 6.6.3
+        run: aqt list-qt windows desktop
         shell: powershell
 
       - name: Install Qt 6.6.3
@@ -85,6 +85,6 @@ jobs:
             -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
         shell: powershell
 
-      - name: Build
+      - name: Build project
         run: cmake --build build --config Release
         shell: powershell
