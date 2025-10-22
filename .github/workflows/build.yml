@@ -68,7 +68,12 @@ jobs:
       - name: Install Qt 6.10.0
         run: |
           aqt install-qt windows desktop 6.10.0 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt
-        shell: pwsh
+        shell: powershell
+
+      - name: Install CMake 4.x
+        run: |
+          choco install cmake --version=4.1.2 --installargs 'ADD_CMAKE_TO_PATH=System'
+        shell: powershell
 
 #      - name: Setup CMake
 #        uses: Kitware/CMake@v3
