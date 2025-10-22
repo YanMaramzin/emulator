@@ -1,3 +1,4 @@
+#include <compare>
 import core.logger.console;
 import core.logger;
 import core.pluginmanager;

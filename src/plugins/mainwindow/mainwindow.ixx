@@ -35,8 +35,8 @@ public:
         int argc = 0;
         char** argv = nullptr;
         app_ = std::make_unique<QGuiApplication>(argc, argv);
-        engine_ = std::make_unique<QQmlApplicationEngine>();
-        engine_->load("qrc:/mainwindow/qml/MainWindow.qml");
+        // engine_ = std::make_unique<QQmlApplicationEngine>();
+        engine_.load("qrc:/mainwindow/qml/MainWindow.qml");
         // open_ = true;
 
         // Запуск Qt event loop в отдельном потоке
@@ -61,7 +61,7 @@ public:
 
 private:
     std::unique_ptr<QGuiApplication> app_;
-    std::unique_ptr<QQmlApplicationEngine> engine_;
+    QQmlApplicationEngine engine_;
     // bool open_ = false;
 };
 
