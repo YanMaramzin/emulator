@@ -1,4 +1,9 @@
 
+if(POLICY CMP0156)
+    cmake_policy(SET CMP0156 OLD)  # disables automatic module scanning
+endif()
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF CACHE BOOL "" FORCE)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
