@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y cmake ninja-build g++-14
+          sudo apt install -y cmake ninja-build g++-14 qt6-base-dev qt6-tools-dev qt6-declarative-dev
           export CXX=g++-14
 
       - name: Configure
@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y cmake ninja-build clang-17
+          sudo apt install -y cmake ninja-build clang-17 qt6-base-dev qt6-tools-dev qt6-declarative-dev
           export CXX=clang++-17
 
       - name: Configure
@@ -54,11 +54,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Python (for aqt)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install aqtinstall
+        run: pip install aqtinstall
+
+      - name: Install Qt
+        run: |
+          aqt install-qt windows desktop 6.6.3 win64_msvc2022_64 -O %GITHUB_WORKSPACE%\Qt
+
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure
-        run: cmake -S . -B build -G "Ninja" -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build -G "Ninja" -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${{ github.workspace }}Qt\6.6.3\msvc2022_64\lib\cmake"
 
       - name: Build
         run: cmake --build build --config Release
