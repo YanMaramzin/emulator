@@ -2,7 +2,7 @@ module;
 #include <iostream>
 #include <memory>
 #include <string>
-
+#include <compare>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
