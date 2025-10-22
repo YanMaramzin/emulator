@@ -10,10 +10,10 @@ import core.object;
 export struct PluginMetadata {
     std::string_view id;
     std::string_view name;
-    std::string version;
-    std::string author;
-    std::string description;
-    std::string apiVersion;
+    std::string_view version;
+    std::string_view author;
+    std::string_view description;
+    std::string_view apiVersion;
     //std::vector<std::string> dependencies;
 };
 
