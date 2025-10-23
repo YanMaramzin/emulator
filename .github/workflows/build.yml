@@ -65,13 +65,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install aqtinstall
 
-      - name: List modules aqt
-        run: |
-          aqt list-qt windows desktop --modules 6.10.0 win64_msvc2022_64
+#      - name: List modules aqt
+#        run: |
+#          aqt list-qt windows desktop --modules 6.10.0 win64_msvc2022_64
 
       - name: Install Qt 6.10.0
         run: |
-          aqt install-qt windows desktop 6.10.0 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt --archives qtbase qtdeclarative
+          aqt install-qt windows desktop 6.8.0 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt --archives qtbase qtdeclarative
         shell: powershell
 
 #      - name: Remove test directories
@@ -84,7 +84,7 @@ jobs:
         shell: powershell
 
       - name: Configure CMake
-        run: cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:GITHUB_WORKSPACE\Qt\6.10.0\msvc2022_64"
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:GITHUB_WORKSPACE\Qt\6.8.0\msvc2022_64"
 
       - name: Build
         run: cmake --build build --config Release
