@@ -65,18 +65,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install aqtinstall
 
-      - name: List modules aqt
-        run: |
-          aqt list-qt windows desktop --modules 6.10.0 win64_msvc2022_64
+#      - name: List modules aqt
+#        run: |
+#          aqt list-qt windows desktop --modules 6.10.0 win64_msvc2022_64
 
       - name: Install Qt 6.10.0
         run: |
-          aqt install-qt windows desktop 6.10.0 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt
+          aqt install-qt windows desktop 6.9.0 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt
         shell: powershell
 
-      - name: Remove test directories
-        run: |
-          Get-ChildItem -Path $env:GITHUB_WORKSPACE\Qt -Recurse -Directory -Filter "Tests" | Remove-Item -Recurse -Force
+#      - name: Remove test directories
+#        run: |
+#          Get-ChildItem -Path $env:GITHUB_WORKSPACE\Qt -Recurse -Directory -Filter "Tests" | Remove-Item -Recurse -Force
 
       - name: Install CMake 4.x
         run: |
