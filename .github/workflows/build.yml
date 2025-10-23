@@ -58,8 +58,7 @@ jobs:
         run: |
           wget https://github.com/Kitware/CMake/releases/download/v4.1.2/cmake-4.1.2-linux-x86_64.tar.gz
           tar -xf cmake-4.1.2-linux-x86_64.tar.gz
-          sudo mv cmake-4.1.2-linux-x86_64 /opt/cmake-4.1.2
-          export PATH=/opt/cmake-4.1.2/bin:$PATH
+          echo "$PWD/cmake-4.1.2-linux-x86_64/bin" >> $GITHUB_PATH
           cmake --version
 
       - name: Configure
@@ -86,8 +85,7 @@ jobs:
         run: |
           wget https://github.com/Kitware/CMake/releases/download/v4.1.2/cmake-4.1.2-linux-x86_64.tar.gz
           tar -xf cmake-4.1.2-linux-x86_64.tar.gz
-          sudo mv cmake-4.1.2-linux-x86_64 /opt/cmake-4.1.2
-          export PATH=/opt/cmake-4.1.2/bin:$PATH
+          echo "$PWD/cmake-4.1.2-linux-x86_64/bin" >> $GITHUB_PATH
           cmake --version
 
       - name: Configure
