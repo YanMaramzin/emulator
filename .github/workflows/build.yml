@@ -65,6 +65,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install aqtinstall
 
+      - name: List modules aqt
+        run: |
+          aqt list-qt windows desktop --modules 6.10.0 win64_msvc2022_64
+
       - name: Install Qt 6.10.0
         run: |
           aqt install-qt windows desktop 6.10.0 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt --modules qtbase qtdeclarative qttools
