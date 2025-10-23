@@ -67,7 +67,7 @@ jobs:
 
       - name: Install Qt 6.10.0
         run: |
-          aqt install-qt windows desktop 6.10.0 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt --modules qtbase,qtdeclarative,qttools
+          aqt install-qt windows desktop 6.10.0 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt --modules qtbase qtdeclarative qttools
         shell: powershell
 
       - name: Install CMake 4.x
