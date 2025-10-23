@@ -62,11 +62,12 @@ jobs:
           tar -xf cmake-4.1.2-linux-x86_64.tar.gz
           echo "$PWD/cmake-4.1.2-linux-x86_64/bin" >> $GITHUB_PATH
           cmake --version
+          
 
       - name: Install Qt 6.10.0
         run: |
           mkdir -p $HOME/Qt
-          aqt install-qt linux desktop 6.10.0 gcc_64 -O $HOME/Qt
+          aqt install-qt linux desktop 6.10.0 -O $HOME/Qt
 
       - name: Configure
         run: cmake -S . -B build \
