@@ -7,46 +7,6 @@ on:
     branches: [ main ]
 
 jobs:
-#  build-linux-gcc:
-#    name: Linux (GCC 14)
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#
-#      - name: Install dependencies
-#        run: |
-#          sudo apt update
-#          sudo apt install -y cmake ninja-build g++-14 qt6-base-dev qt6-tools-dev qt6-declarative-dev
-#          export CXX=g++-14
-#
-#      - name: Configure
-#        run: cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
-#
-#      - name: Build
-#        run: cmake --build build --config Release
-#
-#
-#  build-linux-clang:
-#    name: Linux (Clang 17)
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#
-#      - name: Install dependencies
-#        run: |
-#          sudo apt update
-#          sudo apt install -y cmake ninja-build clang-17 qt6-base-dev qt6-tools-dev qt6-declarative-dev
-#          export CXX=clang++-17
-#
-#      - name: Configure
-#        run: cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
-#
-#      - name: Build
-#        run: cmake --build build --config Release
-
-
   build-windows-msvc:
     name: Windows (MSVC + Qt6 + C++20 Modules)
     runs-on: windows-latest
@@ -65,18 +25,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install aqtinstall
 
-#      - name: List modules aqt
-#        run: |
-#          aqt list-qt windows desktop --modules 6.10.0 win64_msvc2022_64
-
       - name: Install Qt 6.10.0
         run: |
           aqt install-qt windows desktop 6.8.0 win64_msvc2022_64 -O $env:GITHUB_WORKSPACE\Qt --archives qtbase qtdeclarative
         shell: powershell
-
-#      - name: Remove test directories
-#        run: |
-#          Get-ChildItem -Path $env:GITHUB_WORKSPACE\Qt -Recurse -Directory -Filter "Tests" | Remove-Item -Recurse -Forces
 
       - name: Install CMake 4.x
         run: |
