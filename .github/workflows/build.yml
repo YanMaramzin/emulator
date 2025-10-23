@@ -78,46 +78,29 @@ jobs:
 #        run: |
 #          Get-ChildItem -Path $env:GITHUB_WORKSPACE\Qt -Recurse -Directory -Filter "Tests" | Remove-Item -Recurse -Force
 
-      - name: Install dependencies
+#      - name: Install dependencies
+#        run: |
+#            choco install -y python3 git perl
+#            choco install -y visualstudio2022buildtools visualstudio2022-workload-vctools
+
+
+      - name: Install Qt via Chocolatey
         run: |
-            choco install -y python3 git perl
-            choco install -y visualstudio2022buildtools visualstudio2022-workload-vctools
+          choco install -y qt6
+
+#      - name: Remove test directories
+#        run: |
+#          Remove-Item -Recurse -Force "C:\tools\Qt\*Tests"
+#          Remove-Item -Recurse -Force "C:\tools\Qt\Examples"
+
+      - name: Add Qt to PATH
+        run: |
+          echo "C:\tools\Qt\6.10.0\msvc2022_64\bin" >> $env:GITHUB_PATH
 
       - name: Install CMake 4.x
         run: |
           choco install cmake --version=4.1.2 --installargs 'ADD_CMAKE_TO_PATH=System'
         shell: powershell
-
-      - name: Download Qt 6.10 sources
-        run: |
-            mkdir $env:GITHUB_WORKSPACE\qt_src
-            curl -L -o qt6.10.tar.xz https://download.qt.io/archive/qt/6.10/6.10.0/single/qt-everywhere-src-6.10.0.tar.xz
-            tar -xf qt6.10.tar.xz -C $env:GITHUB_WORKSPACE\qt_src --strip-components=1
-
-      - name: Configure Qt without tests
-        run: |
-            cd $env:GITHUB_WORKSPACE\qt_src
-            mkdir build && cd build
-            ..\configure.bat ^
-              -prefix $env:GITHUB_WORKSPACE\Qt6 ^
-              -opensource ^
-              -confirm-license ^
-              -nomake tests ^
-              -nomake examples ^
-              -skip qtwebengine ^
-              -skip qtwebview ^
-              -skip qtremoteobjects ^
-              -no-feature-private ^
-              -debug-and-release ^
-              -modules qtbase qtdeclarative qtcharts qtquick3d
-
-      - name: Build and install Qt
-        run: |
-            cd $env:GITHUB_WORKSPACE\qt_src\build
-            cmake --build . --config Release --target install
-
-      - name: Add Qt to PATH
-        run: echo "$env:GITHUB_WORKSPACE\Qt6\bin" >> $env:GITHUB_PATH
 
       - name: Configure CMake
         run: cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:GITHUB_WORKSPACE\Qt\6.9.0\msvc2022_64"
