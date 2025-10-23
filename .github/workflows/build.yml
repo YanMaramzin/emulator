@@ -40,3 +40,58 @@ jobs:
 
       - name: Build
         run: cmake --build build --config Release
+
+  build-linux-gcc:
+    name: Linux (GCC 14)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build g++-14 qt6-base-dev qt6-tools-dev qt6-declarative-dev
+          export CXX=g++-14
+
+      - name: Install CMake
+        run: |
+          wget https://github.com/Kitware/CMake/releases/download/v4.1.2/cmake-4.1.2-linux-x86_64.tar.gz
+          tar -xf cmake-4.1.2-linux-x86_64.tar.gz
+          sudo mv cmake-4.1.2-linux-x86_64 /opt/cmake-4.1.2
+          export PATH=/opt/cmake-4.1.2/bin:$PATH
+          cmake --version
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
+
+      - name: Build
+        run: cmake --build build --config Release
+
+
+  build-linux-clang:
+    name: Linux (Clang 17)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build clang-17 qt6-base-dev qt6-tools-dev qt6-declarative-dev
+          export CXX=clang++-17
+
+      - name: Install CMake
+        run: |
+          wget https://github.com/Kitware/CMake/releases/download/v4.1.2/cmake-4.1.2-linux-x86_64.tar.gz
+          tar -xf cmake-4.1.2-linux-x86_64.tar.gz
+          sudo mv cmake-4.1.2-linux-x86_64 /opt/cmake-4.1.2
+          export PATH=/opt/cmake-4.1.2/bin:$PATH
+          cmake --version
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
+
+      - name: Build
+        run: cmake --build build --config Release
