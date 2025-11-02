@@ -1,11 +1,13 @@
+project(core.logger)
 
-add_library(core.logger)
+add_library(${PROJECT_NAME} STATIC
+    include/logger.h
+    src/logger.cpp
+)
 
-target_sources(core.logger
-    PUBLIC
-        FILE_SET CXX_MODULES FILES
-    logger.ixx
-    consolelogger.ixx
+target_include_directories(${PROJECT_NAME}
+PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 if (BUILD_TEST)
