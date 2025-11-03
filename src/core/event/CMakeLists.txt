@@ -1,13 +1,17 @@
-add_library(core.event)
+project(core.event)
 
-target_sources(core.event
-        PUBLIC
-        FILE_SET CXX_MODULES FILES
-        events.ixx
-        eventsystem.ixx
-        ieventsystem.ixx
+add_library(${PROJECT_NAME} STATIC
+    include/eventbus.h
+    src/eventbus.cpp
 )
 
-target_link_libraries(core.event PRIVATE core.object)
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-set_target_properties(core.event PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(core.event PRIVATE core.logger)
+
+if (BUILD_TEST)
+    add_subdirectory(tests)
+endif ()
