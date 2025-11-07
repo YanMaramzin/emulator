@@ -3,6 +3,9 @@
 #include "pluginloaderlinux.h"
 #include <logger.h>
 
+PluginManager::PluginManager() {
+    m_context.bus = std::make_shared<EventBus>();
+}
 
 bool PluginManager::loadPlugin(const std::filesystem::path &path) {
 
@@ -71,6 +74,11 @@ void PluginManager::unloadAllPlugins() {
 
     m_loaders.clear();
     m_plugins.clear();
+}
+
+void PluginManager::initializeAll() {
+    for (auto &pl : m_plugins)
+        pl.second->initialize(m_context);
 }
 
 std::unique_ptr<PluginLoader> PluginManager::createPluginLoader() {
