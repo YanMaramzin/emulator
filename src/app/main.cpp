@@ -1,19 +1,12 @@
-// #include <compare>
-// import core.logger.console;
-// import core.logger;
-// import core.pluginmanager;
-// import mainwindow;
+#include <pluginmanager.h>
+#include <QGuiApplication>
 
-int main()
+int main(int argc, char *argv[])
 {
-    // // Получаем UI плагин
-    // auto windowPlugin = pluginManager.get<MainWindow>("MainWindow");
-    // if (!windowPlugin) {
-    //     return 0;
-    // }
-    //
-    // windowPlugin->show();
-    //
-    // pluginManager.shutdownAll();
-    return 0;
+    QGuiApplication app(argc, argv);
+    PluginManager manager;
+
+    manager.loadPluginsFromFolder("../../bin/plugins");
+    manager.initializeAll();
+    return app.exec();
 }
