@@ -17,8 +17,14 @@ std::shared_ptr<IPlugin> PluginLoaderLinux::load(const std::string &path) {
     create = reinterpret_cast<CreatePluginFunc>(dlsym(handle, "createPlugin"));
     destroy = reinterpret_cast<DestroyPluginFunc>(dlsym(handle, "destroyPlugin"));
 
-    if (!create || !destroy) {
-        std::cerr << "Plugin missing create/destroy functions\n";
+    if (!create) {
+        std::cerr << "Plugin missing create functions\n";
+        unload();
+        return nullptr;
+    }
+
+    if (!destroy) {
+        std::cerr << "Plugin missing destroy functions\n";
         unload();
         return nullptr;
     }

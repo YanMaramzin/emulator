@@ -1,8 +1,6 @@
 #pragma once
+#include <iplugin.h>
 #include "ipluginloaderimpl.h"
-
-using CreatePluginFunc = IPlugin* (*)();
-using DestroyPluginFunc = void (*)(IPlugin*);
 
 class PluginLoaderLinux final : public IPluginLoaderImpl
 {
@@ -16,6 +14,8 @@ public:
     bool isLoaded() override;
 
 private:
+    using CreatePluginFunc = IPlugin* (*)();
+    using DestroyPluginFunc = void (*)(IPlugin*);
     void *handle {nullptr};
     CreatePluginFunc create {nullptr};
     DestroyPluginFunc destroy {nullptr};
