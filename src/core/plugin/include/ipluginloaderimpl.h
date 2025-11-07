@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
-
-class IPlugin;
+#include <iplugin.h>
 
 class IPluginLoaderImpl
 {
