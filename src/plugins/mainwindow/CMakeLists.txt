@@ -1,26 +1,32 @@
+project(mainwindowplugin)
 
+
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml)
-
-add_library(mainwindow SHARED)
-target_sources(mainwindow
-        PUBLIC
-        FILE_SET CXX_MODULES FILES
-        mainwindow.ixx
+add_library(${PROJECT_NAME} SHARED
+    include/mainwindowplugin.h
+    src/mainwindowplugin.cpp
+    include/tabmodel.h
+    src/tabmodel.cpp
 )
 
-qt_add_qml_module(mainwindow
-    URI mainwindow
-    VERSION 1.0
-    QML_FILES qml/MainWindow.qml
+qt_add_resources(${PROJECT_NAME}
+    PREFIX /plugins/MainWindow
+    FILES qml/MainWindow.qml
 )
 
-target_link_libraries(mainwindow
-PRIVATE
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        core.plugin
+        core.event
         Qt6::Core
-        Qt6::Gui
         Qt6::Quick
+        Qt6::Gui
         Qt6::Qml
-        core.plugin)
+)
