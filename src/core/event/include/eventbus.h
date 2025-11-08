@@ -18,10 +18,6 @@ public:
      template<typename Event>
      using Handler = std::function<void(const Event&)>;
 
-     EventBus() {
-         std::cout << "Ctor" << __PRETTY_FUNCTION__ << std::endl;
-     }
-
      template<typename Event, typename T>
      void subscribe(std::weak_ptr<T> owner, Handler<Event> handler) {
          std::scoped_lock lock(m_mutex);
